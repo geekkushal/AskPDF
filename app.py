@@ -48,7 +48,7 @@ def get_vectorstore(text_chunks):
 
 # ========== Conversation Setup ==========
 def get_conversation_chain(vectorstore):
-    llm = ChatMistralAI(model="mistral-small-latest", temperature=0.7)
+    llm = ChatMistralAI(model="open-mistral-7b", temperature=0.7)
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
 
     return ConversationalRetrievalChain.from_llm(
@@ -295,7 +295,7 @@ def main():
         # Additional sidebar info
         with st.expander("🛠️ Technical Details"):
             st.markdown("""
-            **Model:** Mistral Small Latest  
+            **Model:** Open Mistral 7B (Free)  
             **Embeddings:** MiniLM-L6-v2 (Optimized)   
             **Vector Store:** FAISS  
             **Chunk Size:** 1000 characters  
