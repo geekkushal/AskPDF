@@ -4,8 +4,9 @@ python-dotenv
 PyPDF2
 langchain
 langchain-core
-langchain-groq
+langchain-mistralai
 sentence-transformers
 huggingface_hub
 faiss-cpu
 langchain-community
+mistralai

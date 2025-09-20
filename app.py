@@ -9,7 +9,7 @@ from langchain_community.embeddings import HuggingFaceInstructEmbeddings, Huggin
 from langchain_community.vectorstores import FAISS
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
-from langchain_groq import ChatGroq
+from langchain_mistralai import ChatMistralAI
 
 # Custom UI templates
 from htmlTemplates import css, bot_template, user_template
@@ -48,7 +48,7 @@ def get_vectorstore(text_chunks):
 
 # ========== Conversation Setup ==========
 def get_conversation_chain(vectorstore):
-    llm = ChatGroq(model="LLaMA3-8b-8192", temperature=0.7)
+    llm = ChatMistralAI(model="mistral-small-latest", temperature=0.7)
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
 
     return ConversationalRetrievalChain.from_llm(
@@ -60,24 +60,40 @@ def get_conversation_chain(vectorstore):
 
 # ========== Chat Handler ==========
 def handle_userinput(user_question):
-    response = st.session_state.conversation({'question': user_question})
-    st.session_state.chat_history = response['chat_history']
+    try:
+        response = st.session_state.conversation({'question': user_question})
+        st.session_state.chat_history = response['chat_history']
 
-    # Create a container for chat messages with better styling
-    chat_container = st.container()
-    with chat_container:
-        for i, message in enumerate(st.session_state.chat_history):
-            if i % 2 == 0:  # User message
-                with st.chat_message("user", avatar="👤"):
-                    st.markdown(message.content)
-            else:  # Bot message
-                with st.chat_message("assistant", avatar="🤖"):
-                    st.markdown(message.content)
+        # Create a container for chat messages with better styling
+        chat_container = st.container()
+        with chat_container:
+            for i, message in enumerate(st.session_state.chat_history):
+                if i % 2 == 0:  # User message
+                    with st.chat_message("user", avatar="👤"):
+                        st.markdown(message.content)
+                else:  # Bot message
+                    with st.chat_message("assistant", avatar="🤖"):
+                        st.markdown(message.content)
+    except Exception as e:
+        if "429" in str(e) or "capacity exceeded" in str(e).lower():
+            st.error("🚫 **API Capacity Exceeded**: The Mistral model is currently at capacity. Please try again in a few minutes, or consider upgrading your Mistral plan.")
+            st.info("💡 **Tip**: You can also try switching to a smaller model like `open-mistral-7b` in the code for better availability.")
+        elif "401" in str(e) or "unauthorized" in str(e).lower():
+            st.error("🔑 **Authentication Error**: Please check your Mistral API key in the .env file.")
+        else:
+            st.error(f"❌ **Error**: {str(e)}")
+            st.info("🔄 Please try again or check your internet connection.")
 
 
 # ========== Streamlit App ==========
 def main():
     load_dotenv()
+    
+    # Check for Mistral API key
+    if not os.getenv("MISTRAL_API_KEY"):
+        st.error("❌ Please set your MISTRAL_API_KEY in your .env file")
+        st.info("ℹ️ Get your API key from: https://console.mistral.ai/")
+        st.stop()
     
     # Enhanced page configuration
     st.set_page_config(
@@ -279,7 +295,7 @@ def main():
         # Additional sidebar info
         with st.expander("🛠️ Technical Details"):
             st.markdown("""
-            **Model:** LLaMA3-8b-8192  
+            **Model:** Mistral Small Latest  
             **Embeddings:** MiniLM-L6-v2 (Optimized)   
             **Vector Store:** FAISS  
             **Chunk Size:** 1000 characters  
