@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 
 # LangChain v0.2+ compatible imports
-from langchain.text_splitter import CharacterTextSplitter
+from langchain_text_splitters import CharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceInstructEmbeddings, HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.chains import ConversationalRetrievalChain
