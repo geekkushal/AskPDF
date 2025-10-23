@@ -10,4 +10,5 @@ huggingface_hub
 faiss-cpu
 langchain-community
 mistralai
-langchain.chains
+langchain-chains
+
