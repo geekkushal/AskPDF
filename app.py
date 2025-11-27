@@ -158,7 +158,7 @@ def main():
     # Main header with enhanced styling
     st.markdown("""
     <div class="main-header">
-        <h1>📚 Ask PDF : By Kushal Ajwani </h1>
+        <h1>📚 Ask PDF  </h1>
         <p>Upload your PDFs and start asking questions powered by AI</p>
     </div>
     """, unsafe_allow_html=True)
